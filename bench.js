@@ -1,3 +1,5 @@
+import { Varint } from "./Varint.js";
+
 var N = 1e7
 var M = 10
 /*
@@ -30,28 +32,30 @@ var M = 10
   recomendation: return undefined
 */
 
-var buffer = new Buffer(8)
+var buffer = new Uint8Array(8); // Buffer(8)
 var _buffer = buffer.slice(0, 4)
-var varint = require('./')
 var l = N
 var invalid = 0
 
-includeInvalid = !!process.env.INVALID
+//includeInvalid = !!process.env.INVALID
+const includeInvalid = false;
+//const includeInvalid = true;
 
 var start = Date.now()
 while (l--) {
   var int = Math.floor(Math.random()*0x01fffffffffffff)
-  varint.encode(int, buffer, 0)
-  //console.log(int, varint.decode(buffer, 0))
-  //every 1000 varints, do one that will be too short,
+  Varint.encode(int, buffer, 0)
+  //console.log(int, Varint.decode(buffer, 0))
+  //every 1000 Varints, do one that will be too short,
   //measure
-  if(includeInvalid && !(l%M)) {
-    if(undefined == varint.decode(_buffer, 0))
-      invalid ++
-  } else 
-  if(int !== varint.decode(buffer, 0))
-    throw new Error('decode was incorrect')
+  if (includeInvalid && !(l % M)) {
+    if (undefined == Varint.decode(_buffer, 0))
+      invalid++;
+  } else  {
+    if (int !== Varint.decode(buffer, 0))
+      throw new Error('decode was incorrect')
+  }
 }
 
 console.log('decode&encode/ms, invalidDecodes')
-console.log(N/(Date.now() - start) + ',', invalid)
+console.log(N / (Date.now() - start) + ',', invalid)
