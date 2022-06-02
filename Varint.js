@@ -65,7 +65,7 @@ export class Varint {
   
     return res
   }
-  static length(value) {
+  static encodingLength(value) {
     return value < N1 ? 1
       : value < N2 ? 2
       : value < N3 ? 3

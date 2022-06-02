@@ -11,7 +11,7 @@ Deno.test('fuzz test', () => {
     const encoded = Varint.encode(expect);
     const data = Varint.decode(encoded);
     t.assertEquals(expect, data, 'fuzz test: ' + expect.toString());
-    t.assertEquals(Varint.length(expect), encoded.length);
+    t.assertEquals(Varint.encodingLength(expect), encoded.length);
   }
 });
 Deno.test('test single byte works as expected', () => {
@@ -20,7 +20,7 @@ Deno.test('test single byte works as expected', () => {
   buf[1] = 2
   const data = Varint.decode(buf)
   t.assertEquals(data, 300, 'should equal 300')
-  t.assertEquals(Varint.length(data), 2)
+  t.assertEquals(Varint.encodingLength(data), 2)
 });
 
 Deno.test('test encode works as expected', () => {
@@ -32,7 +32,7 @@ Deno.test('test decode single bytes', () =>  {
   buf[0] = expected
   const data = Varint.decode(buf)
   t.assertEquals(data, expected)
-  t.assertEquals(Varint.length(data), 1)
+  t.assertEquals(Varint.encodingLength(data), 1)
 });
 Deno.test('test decode multiple bytes with zero', () =>  {
   const expected = randint(parseInt('1111111', '2'))
@@ -41,19 +41,19 @@ Deno.test('test decode multiple bytes with zero', () =>  {
   buf[1] = expected
   const data = Varint.decode(buf)
   t.assertEquals(data, expected << 7)
-  t.assertEquals(Varint.length(data), 2)
+  t.assertEquals(Varint.encodingLength(data), 2)
 })
 
 Deno.test('encode single byte', () =>  {
   const expected = randint(parseInt('1111111', '2'))
   t.assertEquals(Varint.encode(expected), new Uint8Array([expected]))
-  t.assertEquals(Varint.length(expected), 1)
+  t.assertEquals(Varint.encodingLength(expected), 1)
 })
 
 Deno.test('encode multiple byte with zero first byte', () =>  {
   const expected = 0x0F00
   t.assertEquals(Varint.encode(expected), new Uint8Array([0x80, 0x1E]))
-  t.assertEquals(Varint.length(expected), 2)
+  t.assertEquals(Varint.encodingLength(expected), 2)
 })
 
 Deno.test('big integers', () =>  {
@@ -79,14 +79,14 @@ Deno.test('fuzz test - big', () =>  {
     const encoded = Varint.encode(expect)
     const data = Varint.decode(encoded)
     t.assertEquals(expect, data, 'fuzz test: ' + expect.toString())
-    t.assertEquals(Varint.length(expect), encoded.length)
+    t.assertEquals(Varint.encodingLength(expect), encoded.length)
   }
 })
 
 Deno.test('encodingLength', () =>  {
   for (let i = 0; i <= 53; i++) {
     const n = Math.pow(2, i) - 1
-    t.assertEquals(Varint.encode(n).length, Varint.length(n))
+    t.assertEquals(Varint.encode(n).length, Varint.encodingLength(n))
   }
 })
 
